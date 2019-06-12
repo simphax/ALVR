@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2016 Advanced Micro Devices, Inc. All rights reserved.
+// Copyright (c) 2018 Advanced Micro Devices, Inc. All rights reserved.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,8 +20,12 @@
 // THE SOFTWARE.
 //
 
-#ifndef __AMFVideoEncoderHW_HEVC_h__
-#define __AMFVideoEncoderHW_HEVC_h__
+//-------------------------------------------------------------------------------------------------
+//  VideoEncoderHW_HEVC interface declaration
+//-------------------------------------------------------------------------------------------------
+
+#ifndef AMF_VideoEncoderHEVC_h
+#define AMF_VideoEncoderHEVC_h
 #pragma once
 
 #include "Component.h"
@@ -66,6 +70,7 @@ enum AMF_VIDEO_ENCODER_LEVEL_ENUM
 
 enum AMF_VIDEO_ENCODER_HEVC_RATE_CONTROL_METHOD_ENUM
 {
+    AMF_VIDEO_ENCODER_HEVC_RATE_CONTROL_METHOD_UNKNOWN = -1,
     AMF_VIDEO_ENCODER_HEVC_RATE_CONTROL_METHOD_CONSTANT_QP = 0,
     AMF_VIDEO_ENCODER_HEVC_RATE_CONTROL_METHOD_LATENCY_CONSTRAINED_VBR,
     AMF_VIDEO_ENCODER_HEVC_RATE_CONTROL_METHOD_PEAK_CONSTRAINED_VBR,
@@ -83,6 +88,7 @@ enum AMF_VIDEO_ENCODER_HEVC_PICTURE_TYPE_ENUM
 
 enum AMF_VIDEO_ENCODER_HEVC_OUTPUT_DATA_TYPE_ENUM
 {
+    AMF_VIDEO_ENCODER_HEVC_OUTPUT_DATA_TYPE_IDR,
     AMF_VIDEO_ENCODER_HEVC_OUTPUT_DATA_TYPE_I,
     AMF_VIDEO_ENCODER_HEVC_OUTPUT_DATA_TYPE_P
 };
@@ -101,12 +107,6 @@ enum AMF_VIDEO_ENCODER_HEVC_HEADER_INSERTION_MODE_ENUM
     AMF_VIDEO_ENCODER_HEVC_HEADER_INSERTION_MODE_IDR_ALIGNED
 };
 
-enum AMF_VIDEO_ENCODER_HEVC_VBAQ_MODE_ENUM
-{
-    AMF_VIDEO_ENCODER_HEVC_VBAQ_MODE_NONE           = 0, 
-    AMF_VIDEO_ENCODER_HEVC_VBAQ_MODE_AUTO
-};
-
 
 
 // Static properties - can be set before Init()
@@ -123,7 +123,7 @@ enum AMF_VIDEO_ENCODER_HEVC_VBAQ_MODE_ENUM
 #define AMF_VIDEO_ENCODER_HEVC_ASPECT_RATIO                         L"HevcAspectRatio"              // AMFRatio; default = 1, 1
 
 // Picture control properties
-#define AMF_VIDEO_ENCODER_HEVC_NUM_GOPS_PER_IDR                     L"HevcGOPSPerIDR"               // amf_int64; default = 60; The frequency to insert IDR as start of a GOP. 0 means no IDR will be inserted.
+#define AMF_VIDEO_ENCODER_HEVC_NUM_GOPS_PER_IDR                     L"HevcGOPSPerIDR"               // amf_int64; default = 1; The frequency to insert IDR as start of a GOP. 0 means no IDR will be inserted.
 #define AMF_VIDEO_ENCODER_HEVC_GOP_SIZE                             L"HevcGOPSize"                  // amf_int64; default = 60; GOP Size, in frames
 #define AMF_VIDEO_ENCODER_HEVC_DE_BLOCKING_FILTER_DISABLE           L"HevcDeBlockingFilter"         // bool; default = depends on USAGE; De-blocking Filter
 #define AMF_VIDEO_ENCODER_HEVC_SLICES_PER_FRAME                     L"HevcSlicesPerFrame"           // amf_int64; default = 1; Number of slices Per Frame 
@@ -135,8 +135,11 @@ enum AMF_VIDEO_ENCODER_HEVC_VBAQ_MODE_ENUM
 #define AMF_VIDEO_ENCODER_HEVC_VBV_BUFFER_SIZE                      L"HevcVBVBufferSize"            // amf_int64; default = depends on USAGE; VBV Buffer Size in bits
 #define AMF_VIDEO_ENCODER_HEVC_INITIAL_VBV_BUFFER_FULLNESS          L"HevcInitialVBVBufferFullness" // amf_int64; default =  64; Initial VBV Buffer Fullness 0=0% 64=100%
 #define AMF_VIDEO_ENCODER_HEVC_RATE_CONTROL_PREANALYSIS_ENABLE      L"HevcRateControlPreAnalysisEnable"  // bool; default =  depends on USAGE; enable Pre-analysis assisted rate control 
-#define AMF_VIDEO_ENCODER_HEVC_ENABLE_VBAQ                          L"HevcEnableVBAQ"               // amf_int64(AMF_VIDEO_ENCODER_HEVC_VBAQ_MODE_ENUM) default  = AMF_VIDEO_ENCODER_HEVC_VBAQ_MODE_NONE; Enable VBAQ
+#define AMF_VIDEO_ENCODER_HEVC_ENABLE_VBAQ                          L"HevcEnableVBAQ"               // // bool; default = depends on USAGE; Enable auto VBAQ
 
+// Motion estimation
+#define AMF_VIDEO_ENCODER_HEVC_MOTION_HALF_PIXEL                    L"HevcHalfPixel"                // bool; default= true; Half Pixel 
+#define AMF_VIDEO_ENCODER_HEVC_MOTION_QUARTERPIXEL                  L"HevcQuarterPixel"             // bool; default= true; Quarter Pixel
 
 // Dynamic properties - can be set at any time
 
@@ -159,9 +162,6 @@ enum AMF_VIDEO_ENCODER_HEVC_VBAQ_MODE_ENUM
 #define AMF_VIDEO_ENCODER_HEVC_RATE_CONTROL_SKIP_FRAME_ENABLE       L"HevcRateControlSkipFrameEnable" // bool; default =  depends on USAGE; Rate Control Based Frame Skip 
 
 
-// Motion estimation
-#define AMF_VIDEO_ENCODER_HEVC_MOTION_HALF_PIXEL                    L"HevcHalfPixel"                // bool; default= true; Half Pixel 
-#define AMF_VIDEO_ENCODER_HEVC_MOTION_QUARTERPIXEL                  L"HevcQuarterPixel"             // bool; default= true; Quarter Pixel
 
 // Per-submittion properties - can be set on input surface interface
 #define AMF_VIDEO_ENCODER_HEVC_END_OF_SEQUENCE                      L"HevcEndOfSequence"            // bool; default = false; generate end of sequence
@@ -187,4 +187,4 @@ enum AMF_VIDEO_ENCODER_HEVC_VBAQ_MODE_ENUM
 #define AMF_VIDEO_ENCODER_HEVC_CAP_MAX_REFERENCE_FRAMES             L"HevcMaxReferenceFrames"       // amf_int64 maximum number of reference frames
 
 
-#endif //#ifndef __AMFVideoEncoderHW_HEVC_h__
+#endif //#ifndef AMF_VideoEncoderHEVC_h
